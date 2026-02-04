@@ -1,22 +1,30 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { HiBuildingOffice2 } from "react-icons/hi2";
 import { EscrowData } from "@/types/escrow";
 import EscrowList from "@/components/escrow/EscrowList";
 
-export default async function EscrowPage() {
-  let list_escrow: EscrowData[] = [];
+export default function EscrowPage() {
+  const [listEscrow, setListEscrow] = useState<EscrowData[]>([]);
 
-  try {
-    const response = await api.get(`/escrow/36`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  useEffect(() => {
+    const fetchEscrow = async () => {
+      try {
+        const response = await api.get(`/escrow/36`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        setListEscrow(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    list_escrow = response.data;
-  } catch (error) {
-    console.log(error);
-  }
+    fetchEscrow();
+  }, []);
 
   return (
     <div className="bg-[#F7F8FA] px-3 flex flex-col gap-4 pt-[30px] pb-[90px] sm:px-8 xl:pb-[40px] 2xl:px-[8rem]">
@@ -26,11 +34,11 @@ export default async function EscrowPage() {
         </h1>
         <span className="flex items-center gap-1 font-medium text-primary/70 text-sm xl:text-lg">
           <HiBuildingOffice2 className="size-4 xl:size-6" />
-          {list_escrow.length} properties
+          {listEscrow.length} properties
         </span>
       </div>
 
-      <EscrowList list_escrow={list_escrow} />
+      <EscrowList list_escrow={listEscrow} />
     </div>
   );
 }

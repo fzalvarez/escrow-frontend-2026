@@ -1,69 +1,34 @@
 "use client";
 
-import { useNewPropertyStore } from "@/store/new-property";
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  MapMouseEvent,
-} from "@vis.gl/react-google-maps";
-import { memo } from "react";
-import { FaMapPin } from "react-icons/fa6";
+import dynamic from "next/dynamic";
 
-interface Props {
-  apiKey: string;
-}
-
-const PropertyMapInner = memo(function PropertyMapInner() {
-  const { position, setPosition } = useNewPropertyStore();
-
-  const handleDragEnd = (e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      setPosition({
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng(),
-      });
-    }
-  };
-
-  const handleMapClick = (event: MapMouseEvent) => {
-    const latLng = event.detail?.latLng;
-    if (latLng) {
-      setPosition({
-        lat: latLng.lat,
-        lng: latLng.lng,
-      });
-    }
-  };
-
+// Componente de carga mientras se importa el mapa
+function MapSkeleton() {
   return (
-    <Map
-      defaultCenter={position}
-      defaultZoom={18}
+    <div
       style={{
         height: "250px",
         width: "100%",
         borderRadius: "20px",
         overflow: "hidden",
         border: "1px solid oklch(1 0 0 / 10%)",
+        backgroundColor: "#f0f0f0",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
-      mapId="a7fbcfaf12930dbe6fa1a6e3"
-      disableDefaultUI
-      onClick={handleMapClick}
     >
-      <AdvancedMarker position={position} draggable onDragEnd={handleDragEnd}>
-        <div className="flex flex-col items-center">
-          <FaMapPin size={36} color="blue" />
-        </div>
-      </AdvancedMarker>
-    </Map>
+      <p style={{ color: "#999" }}>Cargando mapa...</p>
+    </div>
   );
+}
+
+// Importar el componente del mapa solo en el cliente (sin SSR)
+const LeafletMap = dynamic(() => import("./PropertyMapClient"), {
+  ssr: false,
+  loading: () => <MapSkeleton />,
 });
 
-export default function PropertyMap({ apiKey }: Props) {
-  return (
-    <APIProvider apiKey={apiKey}>
-      <PropertyMapInner />
-    </APIProvider>
-  );
+export default function PropertyMap() {
+  return <LeafletMap />;
 }

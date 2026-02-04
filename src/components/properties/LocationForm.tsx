@@ -18,7 +18,6 @@ interface Props {
 }
 
 export default function LocationForm({ locationData, setLocationData }: Props) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
   const handleChange = (field: keyof Location, value: string | number) => {
     setLocationData({
       ...locationData,
@@ -123,7 +122,7 @@ export default function LocationForm({ locationData, setLocationData }: Props) {
             Move the map to position the pin ar the exact location
           </p>
 
-          <PropertyMap apiKey={apiKey} />
+          <PropertyMap />
         </div>
       </div>
     </ScrollArea>
